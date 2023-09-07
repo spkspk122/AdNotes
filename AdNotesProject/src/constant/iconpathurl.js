@@ -1,0 +1,18 @@
+export const iconpathurl = {
+  menu: require('../assest/images/menu.png'),
+  notification: require('../assest/images/notify.png'),
+  cart: require('../assest/images/cart.png'),
+  home: require('../assest/images/home.png'),
+  product: require('../assest/images/product.png'),
+  profile: require('../assest/images/profile.png'),
+  catagory: require('../assest/images/catagory.png'),
+  logout: require('../assest/images/logout.png'),
+  mic: require('../assest/images/mic.jpeg'),
+  scan: require('../assest/images/scan.png'),
+  more: require('../assest/images/more.png'),
+  oil: require('../assest/images/oil.png'),
+  plus: require('../assest/images/plus.png'),
+  minus: require('../assest/images/minus.png'),
+  oil1: require('../assest/images/oil1.png'),
+  sunoil: require('../assest/images/sunoil.jpg'),
+};
