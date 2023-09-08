@@ -4,8 +4,13 @@ export const strings = {
   jio: 'RN Notes App',
   logout: 'LogOut',
   notes: 'Notes',
-  enter: 'Enter',
+  submit: 'Submit',
   upload: 'upload photo',
+  title: 'Tiltle',
+  delete: 'Delete',
+  update: 'Update',
+  edit: 'Edit',
+  remove: 'remove',
 };
 
 export const loginStrings = {

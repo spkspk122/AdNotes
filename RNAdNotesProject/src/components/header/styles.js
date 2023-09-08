@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     width: '100%',
     alignSelf: 'center',
+    backgroundColor: colors.blue_1,
   },
   innerConatiner: {
     flexDirection: 'row',

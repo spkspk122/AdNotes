@@ -1,21 +1,23 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView, Image} from 'react-native';
+import {FlatList, Image, Text, View, TouchableOpacity} from 'react-native';
 
+//package
+import {launchImageLibrary} from 'react-native-image-picker';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
+
+//component
+import CustomButton from '../../components/button';
 import Header from '../../components/header';
 import Spacer from '../../components/spacer';
-import styles from './styles';
-import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import TextInputBox from '../../components/textInput';
-import {loginStrings, placeholder, strings} from '../../constant/strings';
-import CustomButton from '../../components/button';
-import {iconpathurl} from '../../constant/iconpathurl';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {useDispatch, useSelector} from 'react-redux';
-import {addNote, deleteNote} from '../../redux/actions/actions';
-import {colors} from '../../utlis/constants';
-import {TouchableOpacity} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+
+//constant
+import {placeholder, strings} from '../../constant/strings';
+//redux
+import {addNote, deleteNote, updateNote} from '../../redux/actions/actions';
+//styles
+import styles from './styles';
 
 const Home = () => {
   //local States
@@ -25,6 +27,8 @@ const Home = () => {
     title: '',
   });
   const [photo, setPhoto] = useState();
+
+  const [editingData, setEditingData] = useState(null);
 
   //imageLauncher
   let Options = {
@@ -58,6 +62,7 @@ const Home = () => {
 
   const callBack = (txt, id) => {
     let copiedData = {...data};
+
     switch (id) {
       case 'title':
         copiedData.title = txt;
@@ -79,8 +84,33 @@ const Home = () => {
       photo: photo,
       title: data?.title,
     };
+    dispatch(addNote(newNote));
+    setData('');
+    setPhoto(null);
+  };
 
-    dispatch(addNote(newNote, 'ajith'));
+  //edit
+
+  const handleUpdate = item => {
+    const updatedNote = {
+      id: item?.id,
+      text: data?.notes,
+      photo: photo,
+      title: data?.title,
+    };
+
+    dispatch(updateNote(updatedNote));
+
+    setData('');
+  };
+
+  const handleEdit = item => {
+    setEditingData(item);
+    setData({
+      notes: item.text,
+      title: item.title,
+    });
+    setPhoto(item.photo);
   };
 
   //renderItem for Notes
@@ -88,79 +118,42 @@ const Home = () => {
   const renderNotes = ({item}) => {
     return (
       <>
-        <View
-          style={{
-            backgroundColor: colors.white,
-            width: '90%',
-            alignSelf: 'center',
-            borderRadius: heightPercentageToDP('0.5%'),
-          }}>
+        <View style={styles.cardView}>
           <Spacer height={heightPercentageToDP('3%')} />
-          <Text
-            style={{
-              marginHorizontal: '3%',
-              color: colors.black,
-              fontSize: heightPercentageToDP('2.2%'),
-              fontWeight: '700',
-            }}>
-            {` Title: ${item?.title} `}
-          </Text>
+          <Text style={styles.title}>{` Title: ${item.title}`}</Text>
 
           {item?.photo && (
             <>
               <Spacer height={heightPercentageToDP('1%')} />
-              <Image source={{uri: item?.photo}} style={styles.menuImg} />
+              <Image
+                source={{
+                  uri: item.photo,
+                }}
+                style={styles.menuImg}
+              />
             </>
           )}
 
           <Spacer height={heightPercentageToDP('1%')} />
-          <Text
-            style={{
-              marginHorizontal: '3%',
-              color: colors.black,
-              fontSize: heightPercentageToDP('2.4%'),
-              fontWeight: '700',
-              fontStyle: 'italic',
-            }}>
-            {` Notes:${`\n`} ${item?.text} `}
-          </Text>
+          <Text style={styles.notes}>{` Notes:${`\n`} ${item.text}`}</Text>
           <Spacer height={heightPercentageToDP('3%')} />
-          <View style={{flexDirection: 'row'}}>
+          <View style={styles.btnView}>
             <TouchableOpacity
-              style={{
-                marginHorizontal: '3%',
-                backgroundColor: colors.blue1,
-                width: '20%',
-                borderRadius: heightPercentageToDP('0.5%'),
-                padding: '2%',
-              }}
+              style={styles.btnTxtView}
               onPress={() => dispatch(deleteNote(item?.id))}>
-              <Text
-                style={{
-                  marginHorizontal: '3%',
-                  color: colors.white1,
-                  fontSize: heightPercentageToDP('2.2%'),
-                  textAlign: 'center',
-                }}>
-                Delete
-              </Text>
+              <Text style={styles.txt}>{strings.delete}</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={{
-                marginHorizontal: '3%',
-                backgroundColor: colors.blue1,
-                width: '20%',
-                borderRadius: heightPercentageToDP('0.5%'),
-                padding: '2%',
-              }}>
-              <Text
-                style={{
-                  marginHorizontal: '3%',
-                  color: colors.white1,
-                  fontSize: heightPercentageToDP('2.2%'),
-                  textAlign: 'center',
-                }}>
-                Edit
+              style={styles.btnTxtView}
+              onPress={() =>
+                editingData && editingData.id === item.id
+                  ? handleUpdate(item)
+                  : handleEdit(item)
+              }>
+              <Text style={styles.txt}>
+                {editingData && editingData.id === item.id
+                  ? strings.update
+                  : strings.edit}
               </Text>
             </TouchableOpacity>
           </View>
@@ -174,86 +167,65 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <View style={styles.mainView}>
-        <View style={styles.headerView}>
-          <Header />
-        </View>
+        <Header />
 
-        <Spacer height={heightPercentageToDP('3%')} />
+        <FlatList
+          data={[1]}
+          renderItem={() => {
+            return (
+              <>
+                <Spacer height={heightPercentageToDP('3%')} />
 
-        <View style={{width: '90%', alignSelf: 'center'}}>
-          <TextInputBox
-            value={data}
-            placeholder={placeholder.notes}
-            onChangeText={txt => callBack(txt, 'title')}
-            label={strings.notes}
-          />
+                <View style={styles.container1}>
+                  <TextInputBox
+                    value={data.title}
+                    placeholder={placeholder.notes}
+                    onChangeText={txt => callBack(txt, 'title')}
+                    label={strings.title}
+                  />
 
-          <TextInputBox
-            type={1}
-            value={data}
-            placeholder={placeholder.notes}
-            onChangeText={txt => callBack(txt, 'notes')}
-            label={strings.notes}
-          />
-          {photo && (
-            <View style={{}}>
-              <Image source={{uri: photo}} style={styles.menuImgs} />
-              <Spacer height={heightPercentageToDP('3%')} />
-            </View>
-          )}
-          <View style={{flexDirection: 'row'}}>
-            <TouchableOpacity
-              style={{
-                marginHorizontal: '3%',
-                backgroundColor: colors.blue1,
-                width: '35%',
-                borderRadius: heightPercentageToDP('0.5%'),
-                padding: '2%',
-              }}
-              onPress={openGallery}>
-              <Text
-                style={{
-                  color: colors.white1,
-                  fontSize: heightPercentageToDP('2.2%'),
-                  textAlign: 'center',
-                  fontWeight: '700',
-                }}>
-                {strings.upload}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                marginHorizontal: '3%',
-                backgroundColor: colors.blue1,
-                width: '35%',
-                borderRadius: heightPercentageToDP('0.5%'),
-                padding: '2%',
-              }}
-              onPress={handleRemove}>
-              <Text
-                style={{
-                  color: colors.white1,
-                  fontSize: heightPercentageToDP('2.2%'),
-                  textAlign: 'center',
-                  fontWeight: '700',
-                }}>
-                remove
-              </Text>
-            </TouchableOpacity>
-          </View>
+                  <TextInputBox
+                    type={1}
+                    value={data.notes}
+                    placeholder={placeholder.notes}
+                    onChangeText={txt => callBack(txt, 'notes')}
+                    label={strings.notes}
+                  />
+                  {photo && (
+                    <View style={{}}>
+                      <Image source={{uri: photo}} style={styles.menuImgs} />
+                      <Spacer height={heightPercentageToDP('3%')} />
+                    </View>
+                  )}
+                  <View style={styles.container2}>
+                    <TouchableOpacity
+                      style={styles.uploadBtn}
+                      onPress={openGallery}>
+                      <Text style={styles.uploadtxt}>{strings.upload}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.uploadBtn}
+                      onPress={handleRemove}>
+                      <Text style={styles.uploadtxt}>{strings.remove}</Text>
+                    </TouchableOpacity>
+                  </View>
 
-          <Spacer height={heightPercentageToDP('3%')} />
-          <CustomButton
-            CustomStyle={styles.btn}
-            lable={strings.enter}
-            onPress={handleSubmit}
-          />
-        </View>
-        <Spacer height={heightPercentageToDP('3%')} />
+                  <Spacer height={heightPercentageToDP('5%')} />
+                  <CustomButton
+                    CustomStyle={styles.btn}
+                    lable={strings.submit}
+                    onPress={handleSubmit}
+                  />
+                </View>
+                <Spacer height={heightPercentageToDP('3%')} />
 
-        <FlatList data={notesData} renderItem={renderNotes} />
+                <FlatList data={notesData} renderItem={renderNotes} />
 
-        <Spacer height={heightPercentageToDP('3%')} />
+                <Spacer height={heightPercentageToDP('3%')} />
+              </>
+            );
+          }}
+        />
       </View>
     </View>
   );

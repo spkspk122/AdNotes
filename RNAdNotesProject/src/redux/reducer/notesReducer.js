@@ -22,6 +22,7 @@ export const notesReducer = (state = INITIAL_STATE, action) => {
       };
 
     case ActionTypes.addNotes:
+      console.log(action.payload, 'add');
       return {
         ...state,
         notes: [...state.notes, action.payload?.data],
@@ -33,28 +34,22 @@ export const notesReducer = (state = INITIAL_STATE, action) => {
         notes: newNote,
       };
 
-    // case ActionTypes.updatedProduct:
-    // let updatedProductIndex = state.products.findIndex(
-    //   obj => obj.id == action.payload?.data?.id,
-    // );
-    // let updateList = [...state.products];
-
-    // if (payload.Btnid === 'add') {
-    //   updateList[updatedProductIndex].count += 1;
-    // } else {
-    //   const count = updateList[updatedProductIndex].count;
-
-    //   if (count == 0) {
-    //     let updatedArray = [...updateList.splice(updatedProductIndex, 1)];
-    //   } else {
-    //     updateList[updatedProductIndex].count -= 1;
-    //   }
-    // }
-
-    // return {
-    //   ...state,
-    //   products: updateList,
-    // };
+    case ActionTypes.updateNote:
+      console.log(action.payload, 'reducer');
+      return {
+        ...state,
+        notes: state.notes.map(note => {
+          if (note.id === action.payload.id) {
+            return {
+              ...note,
+              text: action.payload.text,
+              photo: action.payload.photo,
+              title: action.payload.title,
+            };
+          }
+          return note;
+        }),
+      };
     default:
       return state;
   }
