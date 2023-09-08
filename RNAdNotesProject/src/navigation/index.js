@@ -16,7 +16,7 @@ export const AppStack = () => {
     <NavigationContainer
       ref={NavigationService.navigationRef}
       independent={true}>
-      <Stack.Navigator initialRouteName={SCREENS.home}>
+      <Stack.Navigator initialRouteName={SCREENS.login}>
         <Stack.Screen
           name={SCREENS.drawerNavigation}
           component={DrawerNavigator}
@@ -25,21 +25,6 @@ export const AppStack = () => {
         <Stack.Screen
           name={SCREENS.login}
           component={screenNames.Login}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name={SCREENS.order}
-          component={screenNames.Order}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name={SCREENS.categories}
-          component={screenNames.Categories}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name={SCREENS.cart}
-          component={screenNames.Cart}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

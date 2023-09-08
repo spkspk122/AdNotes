@@ -124,6 +124,7 @@ const Home = () => {
 
           {item?.photo && (
             <>
+              <Text style={styles.title}>{` Image:`}</Text>
               <Spacer height={heightPercentageToDP('1%')} />
               <Image
                 source={{
@@ -191,6 +192,8 @@ const Home = () => {
                     onChangeText={txt => callBack(txt, 'notes')}
                     label={strings.notes}
                   />
+                  <Text style={styles.title}>{`Image:`}</Text>
+                  <Spacer height={heightPercentageToDP('3%')} />
                   {photo && (
                     <View style={{}}>
                       <Image source={{uri: photo}} style={styles.menuImgs} />
